@@ -327,12 +327,13 @@ docker.image('mcr.microsoft.com/playwright:v1.27.0-focal')
    <img src="CI/configure-parameter.png" alt="parameter config" width=600>
 
 5. From the pipeline definition dropdown, select `Pipeline script from SCM`
-6. Select `git` SCM
-7. Provide the GitHub credentials and url to your repository
-8. In 'Branches to build', enter `*/${BRANCH}`<br>
+6. Ensure `Lightweight checkout` is *NOT* selected
+7. Select `git` SCM
+8. Provide the GitHub credentials and url to your repository
+9. In 'Branches to build', enter `*/${BRANCH}`<br>
    <img src="CI/git-config.png" alt="git config" width=600>
 
-9. Save the pipeline configuration
+10. Save the pipeline configuration
 
 That's it! Your pipeline is ready to run the first build. Setting the `BRANCH` parameter allows you to specify which branch should be used for each build.
 
