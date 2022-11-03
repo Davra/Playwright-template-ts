@@ -20,7 +20,7 @@ test.describe.parallel("Test that doesn't use authenticated state", () => {
     const authState = await appRequest.storageState();
 
     // Authenticated context starts with cookies
-    expect(authState.cookies.length).toEqual(2);
+    expect(authState.cookies.length).not.toEqual(0);
     // Unauthenticated context starts without cookies
     expect(noAuthState.cookies.length).toEqual(0);
 
