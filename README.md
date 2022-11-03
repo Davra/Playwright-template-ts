@@ -318,20 +318,20 @@ docker.image('mcr.microsoft.com/playwright:v1.27.0-focal')
 
 1. Open Jenkins and select `New Item` from the menu
 2. Select `Pipeline` and give it a name, then click 'OK'<br>
-   <img src="CI/create-pipeline.png" alt="create pipeline" width=600>
+   <img width="600" alt="create-pipeline" src="https://user-images.githubusercontent.com/79643069/199702029-84c29039-fedf-4b11-9843-0bf5909e5679.png">
 
 3. Select `This project is parameterised` and add a string parameter<br>
-   <img src="CI/add-parameter.png" alt="parametrise" width=200>
+   <img width="200" alt="add-parameter" src="https://user-images.githubusercontent.com/79643069/199702144-bc34ab34-a844-4b39-9397-4a7b2c014508.png">
 
 4. Set 'Name' to `BRANCH` and 'Default Value' to `main`<br>
-   <img src="CI/configure-parameter.png" alt="parameter config" width=600>
+   <img width="600" alt="configure-parameter" src="https://user-images.githubusercontent.com/79643069/199702218-66ec9661-158c-48dc-940e-0705e7c65efd.png">
 
 5. From the pipeline definition dropdown, select `Pipeline script from SCM`
 6. Ensure `Lightweight checkout` is *NOT* selected
 7. Select `git` SCM
 8. Provide the GitHub credentials and url to your repository
 9. In 'Branches to build', enter `*/${BRANCH}`<br>
-   <img src="CI/git-config.png" alt="git config" width=600>
+   <img width="600" alt="git-config" src="https://user-images.githubusercontent.com/79643069/199702303-4d4679a1-036f-4f4f-a3ac-6f9b8cf2feb8.png">
 
 10. Save the pipeline configuration
 
