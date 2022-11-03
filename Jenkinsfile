@@ -8,7 +8,7 @@ node {
             withCredentials([
                     usernamePassword(credentialsId: 'SAMPLE_APP_CREDENTIALS', passwordVariable: 'ADMIN_PASSWORD', usernameVariable: 'ADMIN_USERNAME'),
             ]) {
-                docker.image('mcr.microsoft.com/playwright:v1.26.0-focal')
+                docker.image('mcr.microsoft.com/playwright:v1.27.0-focal')
                         .inside('--ipc=host --init ' +
                                 '-e "PLATFORM_URL=https://your-platform-url.davra.com" ' +
                                 '-e "BASE_URL=https://your-app-url.apps.davra.com/" ' +
