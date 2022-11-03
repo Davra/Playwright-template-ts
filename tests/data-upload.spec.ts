@@ -32,8 +32,8 @@ test.describe("Uploading data", () => {
         timestamp: currentTime - i * 30000, // 30 seconds between datapoints
       });
     }
-    // Give the device 2 seconds before sending data
-    await apiUtils.delay(2000);
+    // Give the device 5 seconds before sending data
+    await apiUtils.delay(5000);
     /* Use apiUtils to send data in three chunks: 500, 500 and 200 */
     await apiUtils.sendData(dataPayload);
   });
