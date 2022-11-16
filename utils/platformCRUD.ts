@@ -19,204 +19,196 @@ export default class platformCRUD {
     this.request = adminContext;
   }
 
-  private async getObject(url: string, options: RequestOptionsNoBody = {}) {
-    const response = await this.request.get(url, { failOnStatusCode: true, ...options });
-    return (await response.json()).records[0];
-  }
+  private get: CrudRequest = async (url, options = {}) => {
+    return await this.request.get(url, { failOnStatusCode: !options.rawResponse, ...options });
+  };
+
+  private post: CrudRequest = async (url, options = {}) => {
+    return await this.request.post(url, { failOnStatusCode: !options.rawResponse, ...options });
+  };
+
+  private put: CrudRequest = async (url, options = {}) => {
+    return await this.request.put(url, { failOnStatusCode: !options.rawResponse, ...options });
+  };
+
+  private delete: CrudRequest = async (url, options = {}) => {
+    return await this.request.delete(url, { failOnStatusCode: !options.rawResponse, ...options });
+  };
 
   // -----------------------
   //         DEVICES
   // -----------------------
 
-  async getDevices(options: RequestOptionsNoBody = {}): Promise<Device[]> {
-    const response = await this.request.get("/api/v1/devices", { failOnStatusCode: true, ...options });
-    return (await response.json()).records;
-  }
+  getDevices: AsyncGetFn<Device[]> = async (options = {}) => {
+    const response = await this.get("/api/v1/devices", options);
+    return options.rawResponse ? response : (await response.json()).records;
+  };
 
-  async getDevice(uuid: string, options: RequestOptionsNoBody = {}): Promise<Device> {
-    const response = await this.request.get(`/api/v1/devices/${uuid}`, { failOnStatusCode: true, ...options });
-    return (await response.json()).records[0];
-  }
+  getDevice: AsyncGetFnWithParam<Device> = async (uuid, options = {}) => {
+    const response = await this.get(`/api/v1/devices/${uuid}`, options);
+    return options.rawResponse ? response : (await response.json()).records[0];
+  };
 
-  async createDevice(payload: object, options: RequestOptionsWithBody = {}): Promise<Device> {
-    const response = await this.request.post("/api/v1/devices", { data: payload, failOnStatusCode: true, ...options });
-    return (await response.json())[0];
-  }
+  createDevice: AsyncPostFn<object, Device> = async (payload, options = {}) => {
+    const response = await this.post("/api/v1/devices", { data: payload, ...options });
+    return options.rawResponse ? response : (await response.json())[0];
+  };
 
-  async updateDevice(uuid: string, payload: object, options: RequestOptionsWithBody = {}): Promise<APIResponse> {
-    return await this.request.put(`/api/v1/devices/${uuid}`, { data: payload, failOnStatusCode: true, ...options });
-  }
+  updateDevice: AsyncPutFn = async (uuid, payload, options = {}) => {
+    return await this.put(`/api/v1/devices/${uuid}`, { data: payload, ...options });
+  };
 
-  async deleteDevice(uuid: string, options: RequestOptionsWithBody = {}): Promise<APIResponse> {
-    return await this.request.delete(`/api/v1/devices/${uuid}`, { failOnStatusCode: true, ...options });
-  }
+  deleteDevice: AsyncDeleteFn = async (uuid, options = {}) => {
+    return await this.delete(`/api/v1/devices/${uuid}`, options);
+  };
 
   // -----------------------
   //     RULES ENGINE
   // -----------------------
 
-  async getRules(options: RequestOptionsNoBody = {}): Promise<Rule[]> {
-    const response = await this.request.get("/api/v2/rules", { failOnStatusCode: true, ...options });
-    return (await response.json()).records;
-  }
+  getRules: AsyncGetFn<Rule[]> = async (options = {}) => {
+    const response = await this.get("/api/v2/rules", options);
+    return options.rawResponse ? response : (await response.json()).records;
+  };
 
-  async getRule(uuid: string, options: RequestOptionsNoBody = {}): Promise<Rule> {
-    const response = await this.request.get(`/api/v2/rules/${uuid}`, { failOnStatusCode: true, ...options });
-    return await response.json();
-  }
+  getRule: AsyncGetFnWithParam<Rule> = async (uuid, options = {}) => {
+    const response = await this.get(`/api/v2/rules/${uuid}`, options);
+    return options.rawResponse ? response : await response.json();
+  };
 
-  async createRule(payload: object, options: RequestOptionsWithBody = {}): Promise<Rule> {
-    const response = await this.request.post("/api/v2/rules", { data: payload, failOnStatusCode: true, ...options });
-    return await response.json();
-  }
+  createRule: AsyncPostFn<object, Rule> = async (payload, options = {}) => {
+    const response = await this.post("/api/v2/rules", { data: payload, ...options });
+    return options.rawResponse ? response : await response.json();
+  };
 
-  async updateRule(uuid: string, payload: object, options: RequestOptionsWithBody = {}): Promise<APIResponse> {
-    return await this.request.put(`/api/v2/rules/${uuid}`, { data: payload, failOnStatusCode: true, ...options });
-  }
+  updateRule: AsyncPutFn = async (uuid, payload, options = {}) => {
+    return await this.put(`/api/v2/rules/${uuid}`, { data: payload, ...options });
+  };
 
-  async deleteRule(uuid: string, options: RequestOptionsWithBody = {}): Promise<APIResponse> {
-    return await this.request.delete(`/api/v2/rules/${uuid}`, { failOnStatusCode: true, ...options });
-  }
+  deleteRule: AsyncDeleteFn = async (uuid, options = {}) => {
+    return await this.delete(`/api/v2/rules/${uuid}`, options);
+  };
 
   // -----------------------
   //      DIGITAL TWINS
   // -----------------------
 
-  async getTwins(options: RequestOptionsNoBody = {}): Promise<Twin[]> {
-    const response = await this.request.get("/api/v1/twins", { failOnStatusCode: true, ...options });
-    return await response.json();
-  }
+  getTwins: AsyncGetFn<Twin[]> = async (options = {}) => {
+    const response = await this.get("/api/v1/twins", options);
+    return options.rawResponse ? response : await response.json();
+  };
 
-  async getTwin(uuid: string, options: RequestOptionsNoBody = {}): Promise<Twin> {
-    const response = await this.request.get(`/api/v1/twins/${uuid}`, { failOnStatusCode: true, ...options });
-    return await response.json();
-  }
+  getTwin: AsyncGetFnWithParam<Twin> = async (uuid, options = {}) => {
+    const response = await this.get(`/api/v1/twins/${uuid}`, options);
+    return options.rawResponse ? response : await response.json();
+  };
 
-  async createTwin(payload: object, options: RequestOptionsWithBody = {}): Promise<Twin> {
-    const response = await this.request.post("/api/v1/twins", { data: payload, failOnStatusCode: true, ...options });
-    return await response.json();
-  }
+  createTwin: AsyncPostFn<object, Twin> = async (payload, options = {}) => {
+    const response = await this.post("/api/v1/twins", { data: payload, ...options });
+    return options.rawResponse ? response : await response.json();
+  };
 
-  async updateTwin(uuid: string, payload: object, options: RequestOptionsWithBody = {}): Promise<APIResponse> {
-    return await this.request.put(`/api/v1/twins/${uuid}`, { data: payload, failOnStatusCode: true, ...options });
-  }
+  updateTwin: AsyncPutFn = async (uuid, payload, options = {}) => {
+    return await this.put(`/api/v1/twins/${uuid}`, { data: payload, ...options });
+  };
 
-  async deleteTwin(uuid: string, options: RequestOptionsWithBody = {}): Promise<APIResponse> {
-    return await this.request.delete(`/api/v1/twins/${uuid}`, { failOnStatusCode: true, ...options });
-  }
+  deleteTwin: AsyncDeleteFn = async (uuid, options = {}) => {
+    return await this.delete(`/api/v1/twins/${uuid}`, options);
+  };
 
-  async getTwinType(uuid: string, options: RequestOptionsNoBody = {}): Promise<TwinType> {
-    const response = await this.request.get(`/api/v1/twintypes/${uuid}`, { failOnStatusCode: true, ...options });
-    return await response.json();
-  }
+  getTwinType: AsyncGetFnWithParam<TwinType> = async (uuid, options = {}) => {
+    const response = await this.get(`/api/v1/twintypes/${uuid}`, options);
+    return options.rawResponse ? response : await response.json();
+  };
 
-  async getTwinTypes(options: RequestOptionsNoBody = {}): Promise<TwinType[]> {
-    const response = await this.request.get("/api/v1/twintypes", { failOnStatusCode: true, ...options });
-    return await response.json();
-  }
+  getTwinTypes: AsyncGetFn<TwinType[]> = async (options = {}) => {
+    const response = await this.get("/api/v1/twintypes", options);
+    return options.rawResponse ? response : await response.json();
+  };
 
-  async createTwinType(payload: object, options: RequestOptionsWithBody = {}): Promise<Twin> {
-    const response = await this.request.post("/api/v1/twintypes", {
-      data: payload,
-      failOnStatusCode: true,
-      ...options,
-    });
-    return await response.json();
-  }
+  createTwinType: AsyncPostFn<object, TwinType> = async (payload, options = {}) => {
+    const response = await this.post("/api/v1/twintypes", { data: payload, ...options });
+    return options.rawResponse ? response : await response.json();
+  };
 
-  async updateTwinType(uuid: string, payload: object, options: RequestOptionsWithBody = {}): Promise<APIResponse> {
-    return await this.request.put(`/api/v1/twintypes/${uuid}`, { data: payload, failOnStatusCode: true, ...options });
-  }
+  updateTwinType: AsyncPutFn = async (uuid, payload, options = {}) => {
+    return await this.put(`/api/v1/twintypes/${uuid}`, { data: payload, ...options });
+  };
 
-  async deleteTwinType(uuid: string, options: RequestOptionsWithBody = {}): Promise<APIResponse> {
-    return await this.request.delete(`/api/v1/twintypes/${uuid}`, { failOnStatusCode: true, ...options });
-  }
+  deleteTwinType: AsyncDeleteFn = async (uuid, options = {}) => {
+    return await this.delete(`/api/v1/twintypes/${uuid}`, options);
+  };
 
   // -----------------------
   //        IOT DATA
   // -----------------------
 
-  async sendIotData(payload: object, options: RequestOptionsWithBody = {}): Promise<APIResponse> {
-    return await this.request.put("/api/v1/iotdata", { data: payload, failOnStatusCode: true, ...options });
-  }
+  sendIotData = async (payload: object, options: RequestOptionsWithBody = {}): Promise<APIResponse> => {
+    return await this.put("/api/v1/iotdata", { data: payload, ...options });
+  };
 
-  async queryTSDB(query: TimeseriesQuery, options: RequestOptionsWithBody = {}): Promise<ResponseFromTSDB> {
-    const response = await this.request.post("/api/v2/timeseriesdata", {
-      data: query,
-      failOnStatusCode: true,
-      ...options,
-    });
-    return await response.json();
-  }
+  queryTSDB: AsyncPostFn<TimeseriesQuery, ResponseFromTSDB> = async (query, options = {}) => {
+    const response = await this.post("/api/v2/timeseriesdata", { data: query, ...options });
+    return options.rawResponse ? response : await response.json();
+  };
 
-  async deleteIotData(query: TimeseriesQuery, options: RequestOptionsWithBody = {}): Promise<APIResponse> {
-    return await this.request.delete("/api/v2/timeseriesdata", { data: query, failOnStatusCode: true, ...options });
-  }
+  deleteIotData = async (query: TimeseriesQuery, options: RequestOptionsWithBody = {}): Promise<APIResponse> => {
+    return await this.delete("/api/v2/timeseriesdata", { data: query, ...options });
+  };
 
   // -----------------------
   //     User Management
   // -----------------------
 
-  async getUsers(options: RequestOptionsNoBody = {}): Promise<User[]> {
-    const response = await this.request.get("/api/v2/users", { failOnStatusCode: true, ...options });
-    return await response.json();
-  }
+  getUsers: AsyncGetFn<User[]> = async (options = {}) => {
+    const response = await this.get("/api/v2/users", options);
+    return options.rawResponse ? response : await response.json();
+  };
 
-  async getUser(uuid: string, options: RequestOptionsNoBody = {}): Promise<User> {
-    const response = await this.request.get(`/api/v2/users/${uuid}`, { failOnStatusCode: true, ...options });
-    return await response.json();
-  }
+  getUser: AsyncGetFnWithParam<User> = async (uuid, options = {}) => {
+    const response = await this.get(`/api/v2/users/${uuid}`, options);
+    return options.rawResponse ? response : await response.json();
+  };
 
-  async createUser(payload: object, options: RequestOptionsWithBody = {}): Promise<User> {
-    const response = await this.request.post("/api/v2/users", { data: payload, failOnStatusCode: true, ...options });
-    return await response.json();
-  }
+  createUser: AsyncPostFn<object, User> = async (payload, options = {}) => {
+    const response = await this.post("/api/v2/users", { data: payload, ...options });
+    return options.rawResponse ? response : await response.json();
+  };
 
-  async updateUser(uuid: string, payload: object, options: RequestOptionsWithBody = {}): Promise<APIResponse> {
-    return await this.request.put(`/api/v2/users/${uuid}`, { data: payload, failOnStatusCode: true, ...options });
-  }
+  updateUser: AsyncPutFn = async (uuid, payload, options = {}) => {
+    return await this.put(`/api/v2/users/${uuid}`, { data: payload, ...options });
+  };
 
-  async deleteUser(uuid: string, options: RequestOptionsWithBody = {}): Promise<APIResponse> {
-    return await this.request.delete(`/api/v2/users/${uuid}`, { failOnStatusCode: true, ...options });
-  }
+  deleteUser: AsyncDeleteFn = async (uuid, options = {}) => {
+    return await this.delete(`/api/v2/users/${uuid}`, options);
+  };
 
   // -----------------------
   //         Roles
   // -----------------------
 
-  async getRoles(options: RequestOptionsNoBody = {}): Promise<Role[]> {
-    const response = await this.request.get("/api/v1/authorization/roles", { failOnStatusCode: true, ...options });
-    return await response.json();
-  }
+  getRoles: AsyncGetFn<Role[]> = async (options = {}) => {
+    const response = await this.get("/api/v1/authorization/roles", options);
+    return options.rawResponse ? response : await response.json();
+  };
 
-  async getRole(uuid: string, options: RequestOptionsNoBody = {}): Promise<Role> {
-    const response = await this.request.get(`/api/v1/authorization/roles${uuid}`, {
-      failOnStatusCode: true,
-      ...options,
-    });
-    return await response.json();
-  }
+  getRole: AsyncGetFnWithParam<Role> = async (uuid, options = {}) => {
+    const response = await this.get(`/api/v1/authorization/roles${uuid}`, options);
+    return options.rawResponse ? response : await response.json();
+  };
 
-  async createRole(payload: object, options: RequestOptionsWithBody = {}): Promise<Role> {
-    const response = await this.request.post("/api/v1/authorization/roles", {
-      data: payload,
-      failOnStatusCode: true,
-      ...options,
-    });
-    return await response.json();
-  }
+  createRole: AsyncPostFn<object, Role> = async (payload, options = {}) => {
+    const response = await this.post("/api/v1/authorization/roles", { data: payload, ...options });
+    return options.rawResponse ? response : await response.json();
+  };
 
-  async updateRole(uuid: string, payload: object, options: RequestOptionsWithBody = {}): Promise<APIResponse> {
-    return await this.request.put(`/api/v1/authorization/roles/${uuid}`, {
-      data: payload,
-      failOnStatusCode: true,
-      ...options,
-    });
-  }
+  updateRole: AsyncPutFn = async (uuid, payload, options = {}) => {
+    return await this.put(`/api/v1/authorization/roles/${uuid}`, { data: payload, ...options });
+  };
 
-  async deleteRole(uuid: string, options: RequestOptionsWithBody = {}): Promise<APIResponse> {
-    return await this.request.delete(`/api/v1/authorization/roles/${uuid}`, { failOnStatusCode: true, ...options });
-  }
+  deleteRole: AsyncDeleteFn = async (uuid, options = {}) => {
+    return await this.delete(`/api/v1/authorization/roles/${uuid}`, options);
+  };
 }
 
 type TimeseriesQuery = RelativeTimeseriesQuery | AbsoluteTimeseriesQuery;
@@ -242,3 +234,43 @@ interface RelativeRange {
   value: string;
   unit: "months" | "weeks" | "days" | "hours" | "minutes" | "seconds" | "milliseconds";
 }
+
+type CrudRequest = (url: string, options?: RequestOptionsWithBody & { rawResponse?: boolean }) => Promise<APIResponse>;
+
+type InferType<T> = T extends infer U ? U : never;
+
+type AsyncPostFn<Payload, ReturnType> = <R extends boolean>(
+  payload: Payload,
+  options?: RequestOptionsWithBody & {
+    /**
+     * Whether to return APIResponse instead of parsed response.
+     * If true, failOnStatusCode will be false by default.
+     */
+    rawResponse?: R;
+  }
+) => Promise<InferType<R> extends true ? APIResponse : ReturnType>;
+
+type AsyncDeleteFn = (id: string, options?: RequestOptionsNoBody) => Promise<APIResponse>;
+
+type AsyncGetFn<ReturnType> = <R extends boolean>(
+  options?: RequestOptionsNoBody & {
+    /**
+     * Whether to return APIResponse instead of parsed response.
+     * If true, failOnStatusCode will be false by default.
+     */
+    rawResponse?: R;
+  }
+) => Promise<InferType<R> extends true ? APIResponse : ReturnType>;
+
+type AsyncGetFnWithParam<ReturnType> = <R extends boolean>(
+  param: string,
+  options?: RequestOptionsNoBody & {
+    /**
+     * Whether to return APIResponse instead of parsed response.
+     * If true, failOnStatusCode will be false by default.
+     */
+    rawResponse?: R;
+  }
+) => Promise<InferType<R> extends true ? APIResponse : ReturnType>;
+
+type AsyncPutFn = (param: string, payload: object, options?: RequestOptionsNoBody) => Promise<APIResponse>;

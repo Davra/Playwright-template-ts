@@ -1,6 +1,6 @@
 import { APIRequestContext } from "@playwright/test";
 import PlatformCRUD from "./platformCRUD";
-import type { Device, Rule, Twin, TwinType, User } from "../types";
+import type { Device, Rule, Twin, TwinType, User, Role } from "../types";
 
 export default class ApiUtils {
   private readonly request: APIRequestContext;
@@ -13,12 +13,12 @@ export default class ApiUtils {
     this.crud = new PlatformCRUD(adminContext);
   }
 
-  async delay(ms: number) {
-    return new Promise((resolve) => setTimeout(resolve, ms));
-  }
+  delay = async (ms: number) => {
+    await new Promise((resolve) => setTimeout(resolve, ms));
+  };
 
   /** Run function on a loop until it returns a truthy value or times out */
-  async waitUntil(fn: Function, options?: WaitOptions) {
+  waitUntil = async (fn: Function, options?: WaitOptions) => {
     const timeoutAt = Date.now() + (options?.timeout || 10000);
     let conditionMet = false;
     while (!conditionMet && Date.now() < timeoutAt) {
@@ -27,10 +27,10 @@ export default class ApiUtils {
     }
     if (!conditionMet) throw new Error(options?.errorMessage || "Timed out waiting for condition to be met");
     return conditionMet;
-  }
+  };
 
   /** GET device until successful (OK status code) */
-  async waitForDevice(uuid: string, options?: WaitOptions) {
+  waitForDevice = async (uuid: string, options?: WaitOptions) => {
     return await this.waitUntil(async () => {
       try {
         return await this.crud.getDevice(uuid);
@@ -38,16 +38,19 @@ export default class ApiUtils {
         return false;
       }
     }, options);
-  }
+  };
 
-  private async getObjectByName(objArray: { name: string }[], name: string): Promise<object> {
+  private getObjectByName = async <T extends Device | Twin | Rule | TwinType | User | Role>(
+    objArray: T[],
+    name: string
+  ): Promise<T> => {
     const filteredTypes = objArray.filter((item) => item.name === name);
     if (filteredTypes.length !== 1) throw new Error(`Found ${filteredTypes.length} items matching name "${name}"`);
     return filteredTypes[0];
-  }
+  };
 
   /** Uploads payload in chunks (500 datapoints by default) */
-  async sendData(payload: object[] | object, options: { chunkSize?: number } = {}) {
+  sendData = async (payload: object[] | object, options: { chunkSize?: number } = {}) => {
     const data = payload;
     if (!Array.isArray(data)) {
       return await this.crud.sendIotData(data);
@@ -60,7 +63,7 @@ export default class ApiUtils {
         console.error(e.message, dataToPush);
       }
     }
-  }
+  };
 
   /**
    * Delete IoT data stretching from now to specified date in the past, 30 days ago by default
@@ -71,13 +74,13 @@ export default class ApiUtils {
    *    unit: 'hours'
    * });
    */
-  async deleteData(
+  deleteData = async (
     metric: string[] | string,
     options: {
       timeframe?: number | string;
       unit?: "months" | "weeks" | "days" | "hours" | "minutes" | "seconds" | "milliseconds";
     } = {}
-  ) {
+  ) => {
     const metrics = Array.isArray(metric) ? metric : [metric];
     for (const item of metrics) {
       await this.crud.deleteIotData({
@@ -88,27 +91,55 @@ export default class ApiUtils {
         },
       });
     }
-  }
+  };
 
-  async getDeviceByName(deviceName: string): Promise<Device> {
-    return <Device>await this.getObjectByName(await this.crud.getDevices(), deviceName);
-  }
+  getDeviceByName = async (deviceName: string) => {
+    return await this.getObjectByName(await this.crud.getDevices(), deviceName);
+  };
 
-  async getRuleByName(ruleName: string): Promise<Rule> {
-    return <Rule>await this.getObjectByName(await this.crud.getRules(), ruleName);
-  }
+  getRuleByName = async (ruleName: string) => {
+    return await this.getObjectByName(await this.crud.getRules(), ruleName);
+  };
 
-  async getTwinByName(twinName: string): Promise<Twin> {
-    return <Twin>await this.getObjectByName(await this.crud.getTwins(), twinName);
-  }
+  getTwinByName = async (twinName: string) => {
+    return await this.getObjectByName(await this.crud.getTwins(), twinName);
+  };
 
-  async getTwinTypeByName(twinTypeName: string): Promise<TwinType> {
-    return <TwinType>await this.getObjectByName(await this.crud.getTwinTypes(), twinTypeName);
-  }
+  getTwinTypeByName = async (twinTypeName: string) => {
+    return await this.getObjectByName(await this.crud.getTwinTypes(), twinTypeName);
+  };
 
-  async getUserByName(userName: string): Promise<User> {
-    return <User>await this.getObjectByName(await this.crud.getUsers(), userName);
-  }
+  getUserByName = async (userName: string) => {
+    return await this.getObjectByName(await this.crud.getUsers(), userName);
+  };
+
+  getRoleByName = async (roleName: string) => {
+    return await this.getObjectByName(await this.crud.getRoles(), roleName);
+  };
+
+  deleteDevice = async (name: string) => {
+    return await this.crud.deleteDevice((await this.getDeviceByName(name)).UUID);
+  };
+
+  deleteTwin = async (name: string) => {
+    return await this.crud.deleteTwin((await this.getTwinByName(name)).UUID);
+  };
+
+  deleteTwinType = async (name: string) => {
+    return await this.crud.deleteTwinType((await this.getTwinTypeByName(name)).UUID);
+  };
+
+  deleteRule = async (name: string) => {
+    return await this.crud.deleteRule((await this.getRuleByName(name)).UUID);
+  };
+
+  deleteUser = async (name: string) => {
+    return await this.crud.deleteUser((await this.getUserByName(name)).UUID);
+  };
+
+  deleteRole = async (name: string) => {
+    return await this.crud.deleteRole((await this.getRoleByName(name)).UUID);
+  };
 }
 
 interface WaitOptions {
